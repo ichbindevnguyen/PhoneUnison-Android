@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- KDE Breeze Light Theme Colors (Default) -->
+    <color name="background">#EFF0F1</color>
+    <color name="surface">#FCFCFC</color>
+    <color name="surface_variant">#E3E5E7</color>
+    <color name="primary">#3DAEE9</color>
+    <color name="primary_variant">#2D9ED9</color>
+    <color name="on_primary">#FFFFFF</color>
+    <color name="text_primary">#232629</color>
+    <color name="text_secondary">#7F8C8D</color>
+    <color name="outline">#BDC3C7</color>
+    <color name="success">#27AE60</color>
+    <color name="warning">#F39C12</color>
+    <color name="error">#DA4453</color>
+    <color name="on_surface">#232629</color>
+    <color name="on_background">#232629</color>
+    
+    <!-- Accent colors -->
+    <color name="accent">#3DAEE9</color>
+    <color name="accent_dark">#2D9ED9</color>
+    
+    <!-- Legacy names for compatibility -->
+    <color name="colorPrimary">@color/primary</color>
+    <color name="colorPrimaryDark">@color/primary_variant</color>
+    <color name="colorAccent">@color/accent</color>
+    
+    <!-- Launcher Icon -->
+    <color name="ic_launcher_background">#3DAEE9</color>
+    
+    <!-- Button colors -->
+    <color name="button_primary_bg">#3DAEE9</color>
+    <color name="button_primary_text">#FFFFFF</color>
+    <color name="button_secondary_bg">#E3E5E7</color>
+    <color name="button_secondary_text">#232629</color>
+    
+    <!-- Card colors -->
+    <color name="card_background">#FFFFFF</color>
+    <color name="card_stroke">#E3E5E7</color>
+</resources>

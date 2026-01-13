@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PhoneUnison</string>
+    
+    <!-- Main Screen -->
+    <string name="status_connected">Connected</string>
+    <string name="status_disconnected">Not Connected</string>
+    <string name="status_connecting">Connecting…</string>
+    <string name="hint_pair">Tap \'Pair with PC\' to connect</string>
+    <string name="btn_pair">Pair with PC</string>
+    <string name="btn_reconnect">Reconnect</string>
+    <string name="btn_disconnect">Disconnect</string>
+    
+    <!-- Features -->
+    <string name="feature_notifications">Notifications</string>
+    <string name="feature_messages">Messages</string>
+    <string name="feature_calls">Calls</string>
+    <string name="feature_files">Files</string>
+    <string name="feature_clipboard">Clipboard</string>
+    
+    <!-- Pairing Screen -->
+    <string name="pairing_title">Pair with PC</string>
+    <string name="pairing_instructions">Open PhoneUnison on your Windows PC and scan the QR code displayed on screen</string>
+    <string name="pairing_hint">Point your camera at the QR code</string>
+    <string name="pairing_manual">Enter code manually</string>
+    <string name="pairing_success">Connected successfully!</string>
+    <string name="pairing_failed">Connection failed. Please try again.</string>
+    
+    <!-- Permissions -->
+    <string name="permission_required">Permissions Required</string>
+    <string name="permission_explanation">PhoneUnison needs these permissions to sync notifications, SMS, and calls with your PC.</string>
+    <string name="notification_access_title">Notification Access Required</string>
+    <string name="notification_access_message">PhoneUnison needs notification access to sync your notifications to PC. Please enable it in settings.</string>
+    
+    <!-- Service Notification -->
+    <string name="service_notification_title">PhoneUnison</string>
+    <string name="service_notification_connected">Connected to %s</string>
+    <string name="service_notification_disconnected">Disconnected</string>
+    <string name="service_notification_connecting">Connecting…</string>
+    
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_connection">Connection</string>
+    <string name="settings_features">Features</string>
+    <string name="settings_about">About</string>
+    <string name="settings_auto_start">Start on boot</string>
+    <string name="settings_auto_start_summary">Automatically connect when device starts</string>
+</resources>

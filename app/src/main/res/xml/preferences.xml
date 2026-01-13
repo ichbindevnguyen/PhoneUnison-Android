@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory android:title="General">
+        <EditTextPreference
+            app:key="device_name"
+            app:title="Device Name"
+            app:useSimpleSummaryProvider="true"
+            app:defaultValue="PhoneUnison Android" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Appearance">
+        <ListPreference
+            app:key="theme"
+            app:title="Theme"
+            app:summary="System, Light, Dark, Catppuccin"
+            app:entries="@array/theme_entries"
+            app:entryValues="@array/theme_values"
+            app:defaultValue="system"
+            app:useSimpleSummaryProvider="true" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Synchronization">
+        <SwitchPreferenceCompat
+            app:key="sync_notifications"
+            app:title="Sync Notifications"
+            app:summary="Send notifications to connected PC"
+            app:defaultValue="true" />
+        
+        <SwitchPreferenceCompat
+            app:key="sync_clipboard"
+            app:title="Sync Clipboard"
+            app:summary="Sync clipboard content (Text only)"
+            app:defaultValue="true" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="About">
+        <Preference
+            app:key="app_version"
+            app:title="Version"
+            app:summary="1.0.0"
+            app:selectable="false" />
+            
+        <Preference
+            app:key="author"
+            app:title="Author"
+            app:summary="iBDN" />
+            
+        <Preference
+            app:key="github"
+            app:title="GitHub"
+            app:summary="github.com/ichbindevnguyen" />
+            
+        <Preference
+            app:key="about_app"
+            app:title="About PhoneUnison"
+            app:summary="Open-source phone-PC connectivity app inspired by KDE design" />
+    </PreferenceCategory>
+
+</PreferenceScreen>
+
