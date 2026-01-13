@@ -10,7 +10,6 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.phoneunison.mobile.databinding.ActivityMainBinding
 import com.phoneunison.mobile.services.ConnectionService
@@ -21,46 +20,37 @@ import com.phoneunison.mobile.ui.NotificationsActivity
 import com.phoneunison.mobile.ui.PairingActivity
 import com.phoneunison.mobile.ui.SettingsActivity
 
-/**
- * Main Activity - Entry point of the application.
- * Shows connection status and provides access to pairing.
- */
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    
+
     private val requiredPermissions = buildList {
-        // Notifications
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             add(Manifest.permission.POST_NOTIFICATIONS)
         }
-        // SMS
         add(Manifest.permission.SEND_SMS)
         add(Manifest.permission.READ_SMS)
         add(Manifest.permission.RECEIVE_SMS)
-        // Phone
         add(Manifest.permission.READ_PHONE_STATE)
         add(Manifest.permission.READ_CALL_LOG)
         add(Manifest.permission.READ_CONTACTS)
-        // Camera for QR
         add(Manifest.permission.CAMERA)
-        // Bluetooth
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             add(Manifest.permission.BLUETOOTH_CONNECT)
             add(Manifest.permission.BLUETOOTH_SCAN)
         }
     }
 
-    private val requestPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        val allGranted = permissions.values.all { it }
-        if (allGranted) {
-            checkNotificationListenerPermission()
-        } else {
-            showPermissionRationale()
-        }
-    }
+    private val requestPermissionLauncher =
+            registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
+                    permissions ->
+                val allGranted = permissions.values.all { it }
+                if (allGranted) {
+                    checkNotificationListenerPermission()
+                } else {
+                    showPermissionRationale()
+                }
+            }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,44 +68,39 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupUI() {
         binding.apply {
-            // Pair button
             btnPair.setOnClickListener {
                 startActivity(Intent(this@MainActivity, PairingActivity::class.java))
             }
 
-            // Settings button
             btnSettings.setOnClickListener {
                 startActivity(Intent(this@MainActivity, SettingsActivity::class.java))
             }
-            
-            // Feature cards
+
             cardNotifications.setOnClickListener {
                 startActivity(Intent(this@MainActivity, NotificationsActivity::class.java))
             }
-            
+
             cardMessages.setOnClickListener {
                 startActivity(Intent(this@MainActivity, MessagesActivity::class.java))
             }
-            
+
             cardCalls.setOnClickListener {
                 startActivity(Intent(this@MainActivity, CallsActivity::class.java))
             }
-            
+
             cardFiles.setOnClickListener {
                 startActivity(Intent(this@MainActivity, FilesActivity::class.java))
             }
 
-            // Disconnect button
-            btnDisconnect.setOnClickListener {
-                disconnectDevice()
-            }
+            btnDisconnect.setOnClickListener { disconnectDevice() }
         }
     }
 
     private fun checkPermissions() {
-        val missingPermissions = requiredPermissions.filter {
-            ContextCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED
-        }
+        val missingPermissions =
+                requiredPermissions.filter {
+                    ContextCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED
+                }
 
         if (missingPermissions.isNotEmpty()) {
             requestPermissionLauncher.launch(missingPermissions.toTypedArray())
@@ -125,32 +110,32 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun checkNotificationListenerPermission() {
-        val enabledListeners = Settings.Secure.getString(
-            contentResolver,
-            "enabled_notification_listeners"
-        )
-        
+        val enabledListeners =
+                Settings.Secure.getString(contentResolver, "enabled_notification_listeners")
+
         if (enabledListeners == null || !enabledListeners.contains(packageName)) {
             AlertDialog.Builder(this)
-                .setTitle("Notification Access Required")
-                .setMessage("PhoneUnison needs notification access to sync your notifications to PC. Please enable it in settings.")
-                .setPositiveButton("Open Settings") { _, _ ->
-                    startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
-                }
-                .setNegativeButton("Later", null)
-                .show()
+                    .setTitle("Notification Access Required")
+                    .setMessage(
+                            "PhoneUnison needs notification access to sync your notifications to PC. Please enable it in settings."
+                    )
+                    .setPositiveButton("Open Settings") { _, _ ->
+                        startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
+                    }
+                    .setNegativeButton("Later", null)
+                    .show()
         }
     }
 
     private fun showPermissionRationale() {
         AlertDialog.Builder(this)
-            .setTitle("Permissions Required")
-            .setMessage("PhoneUnison needs these permissions to sync notifications, SMS, and calls with your PC.")
-            .setPositiveButton("Grant Permissions") { _, _ ->
-                checkPermissions()
-            }
-            .setNegativeButton("Cancel", null)
-            .show()
+                .setTitle("Permissions Required")
+                .setMessage(
+                        "PhoneUnison needs these permissions to sync notifications, SMS, and calls with your PC."
+                )
+                .setPositiveButton("Grant Permissions") { _, _ -> checkPermissions() }
+                .setNegativeButton("Cancel", null)
+                .show()
     }
 
     private fun updateConnectionStatus() {

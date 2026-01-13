@@ -21,10 +21,6 @@ import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.*
 import okhttp3.*
 
-/**
- * Foreground service for maintaining connection with Windows PC. Handles WebSocket communication
- * and message routing.
- */
 class ConnectionService : Service() {
 
     companion object {
@@ -82,7 +78,6 @@ class ConnectionService : Service() {
                         .readTimeout(0, TimeUnit.MILLISECONDS)
                         .build()
 
-        // Register broadcast receiver
         val filter = IntentFilter("com.phoneunison.SEND_MESSAGE")
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
             registerReceiver(messageReceiver, filter, Context.RECEIVER_EXPORTED)
@@ -132,9 +127,7 @@ class ConnectionService : Service() {
         super.onDestroy()
         try {
             unregisterReceiver(messageReceiver)
-        } catch (e: IllegalArgumentException) {
-            // Receiver not registered
-        }
+        } catch (e: IllegalArgumentException) {}
         disconnect()
         serviceScope.cancel()
         Log.i(TAG, "Connection service destroyed")
