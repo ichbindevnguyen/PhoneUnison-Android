@@ -2,15 +2,13 @@ package com.phoneunison.mobile.protocol
 
 import java.util.UUID
 
-/**
- * Represents a protocol message between Android and Windows PC.
- */
+/** Represents a protocol message between Android and Windows PC. */
 data class Message(
-    val type: String,
-    val data: Map<String, Any?>? = null,
-    val id: String = UUID.randomUUID().toString(),
-    val version: Int = 1,
-    val timestamp: Long = System.currentTimeMillis()
+        val type: String,
+        val data: Map<String, Any?>? = null,
+        val id: String = UUID.randomUUID().toString(),
+        val version: Int = 1,
+        val timestamp: Long = System.currentTimeMillis()
 ) {
     companion object {
         // Message types
@@ -25,6 +23,9 @@ data class Message(
         const val SMS_RECEIVED = "SMS_RECEIVED"
         const val CALL_STATE = "CALL_STATE"
         const val CALL_ACTION = "CALL_ACTION"
+        const val CALL_DIAL = "CALL_DIAL"
+        const val SIM_LIST = "SIM_LIST"
+        const val SIM_LIST_REQUEST = "SIM_LIST_REQUEST"
         const val CLIPBOARD = "CLIPBOARD"
         const val FILE_OFFER = "FILE_OFFER"
         const val FILE_ACCEPT = "FILE_ACCEPT"

@@ -19,6 +19,8 @@ class MessageHandler(private val connectionService: ConnectionService) {
             Message.SMS_MESSAGES -> handleSmsMessages(message)
             Message.SMS_SEND -> handleSmsSend(message)
             Message.CALL_ACTION -> handleCallAction(message)
+            Message.CALL_DIAL -> handleCallDial(message)
+            Message.SIM_LIST_REQUEST -> handleSimListRequest(message)
             Message.CLIPBOARD -> handleClipboard(message)
             Message.FILE_OFFER -> handleFileOffer(message)
             Message.FILE_ACCEPT -> handleFileAccept(message)
@@ -162,6 +164,29 @@ class MessageHandler(private val connectionService: ConnectionService) {
         val actionId = message.data?.get("actionId") as? String
 
         Log.d(TAG, "Notification action: $actionId on $notificationId")
+    }
+
+    private fun handleCallDial(message: Message) {
+        try {
+            val phoneNumber = message.data?.get("phoneNumber") as? String ?: return
+            val subscriptionId = (message.data?.get("subscriptionId") as? Number)?.toInt() ?: -1
+
+            Log.d(TAG, "Dialing: $phoneNumber with SIM: $subscriptionId")
+            connectionService.callHandler.dialNumber(phoneNumber, subscriptionId)
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to dial number", e)
+            sendError("CALL_DIAL_FAILED", e.message ?: "Unknown error")
+        }
+    }
+
+    private fun handleSimListRequest(message: Message) {
+        try {
+            Log.d(TAG, "SIM list requested")
+            connectionService.callHandler.sendSimList()
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to get SIM list", e)
+            sendError("SIM_LIST_FAILED", e.message ?: "Unknown error")
+        }
     }
 
     private fun sendError(code: String, errorMessage: String) {

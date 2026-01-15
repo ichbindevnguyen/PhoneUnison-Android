@@ -55,6 +55,8 @@ class ConnectionService : Service() {
         private set
     lateinit var fileHandler: FileHandler
         private set
+    lateinit var callHandler: CallHandler
+        private set
     private var messageHandler: com.phoneunison.mobile.protocol.MessageHandler? = null
 
     var serverHost: String? = null
@@ -70,6 +72,7 @@ class ConnectionService : Service() {
 
         smsHandler = SmsHandler(this)
         fileHandler = FileHandler(this, this)
+        callHandler = CallHandler(this, this)
         messageHandler = MessageHandler(this)
 
         client =

@@ -49,19 +49,42 @@ cd PhoneUnison-Android
 
 ```
 PhoneUnison-Android/
-├── app/
-│   └── src/main/
-│       ├── java/com/phoneunison/mobile/
-│       │   ├── MainActivity.kt
-│       │   ├── services/
-│       │   │   ├── ConnectionService.kt
-│       │   │   ├── NotificationListenerService.kt
-│       │   │   └── ...
-│       │   ├── network/
-│       │   │   └── UDPDiscovery.kt
-│       │   └── ui/
-│       │       └── ...
-│       └── res/
+├── app/src/main/
+│   ├── AndroidManifest.xml
+│   └── java/com/phoneunison/mobile/
+│       ├── MainActivity.kt              # Main activity
+│       ├── PhoneUnisonApp.kt            # Application class
+│       ├── network/
+│       │   └── UDPDiscovery.kt          # UDP device discovery
+│       ├── protocol/
+│       │   ├── Message.kt               # Message data class
+│       │   └── MessageHandler.kt        # Protocol handler
+│       ├── receivers/
+│       │   ├── BootReceiver.kt          # Auto-start on boot
+│       │   ├── CallStateReceiver.kt     # Phone call monitoring
+│       │   └── SMSReceiver.kt           # SMS notifications
+│       ├── services/
+│       │   ├── CallHandler.kt           # Outbound call handling
+│       │   ├── ConnectionService.kt     # WebSocket connection
+│       │   ├── FileHandler.kt           # File transfer
+│       │   ├── NotificationListenerService.kt
+│       │   └── SmsHandler.kt            # SMS read/send
+│       ├── ui/
+│       │   ├── CallsActivity.kt
+│       │   ├── FilesActivity.kt
+│       │   ├── MessagesActivity.kt
+│       │   ├── NotificationsActivity.kt
+│       │   ├── PairingActivity.kt
+│       │   ├── QRScannerActivity.kt
+│       │   ├── SettingsActivity.kt
+│       │   └── SettingsFragment.kt
+│       └── utils/
+│           └── CryptoUtils.kt           # Encryption utilities
+├── app/src/main/res/                    # Resources
+│   ├── drawable/                        # Icons and shapes
+│   ├── layout/                          # Activity layouts
+│   ├── mipmap/                          # App icons
+│   └── values/                          # Strings, colors, themes
 ├── build.gradle
 └── settings.gradle
 ```
