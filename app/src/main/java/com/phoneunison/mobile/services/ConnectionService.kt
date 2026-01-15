@@ -64,6 +64,8 @@ class ConnectionService : Service() {
     var serverPort: Int = 8765
         private set
     private var pairingCode: String? = null
+    private var reconnectAttempts = 0
+    private val maxReconnectDelay = 60_000L
 
     override fun onCreate() {
         super.onCreate()
@@ -260,6 +262,7 @@ class ConnectionService : Service() {
     private fun setConnected(deviceName: String) {
         isConnected = true
         connectedDeviceName = deviceName
+        reconnectAttempts = 0
         updateNotification("Connected to $deviceName")
     }
 
@@ -277,9 +280,12 @@ class ConnectionService : Service() {
 
     private fun scheduleReconnect() {
         serviceScope.launch {
-            delay(5000)
+            val delayMs =
+                    minOf(5000L * (1 shl reconnectAttempts.coerceAtMost(5)), maxReconnectDelay)
+            reconnectAttempts++
+            delay(delayMs)
             if (!isConnected && serverHost != null) {
-                Log.i(TAG, "Attempting reconnect...")
+                Log.i(TAG, "Attempting reconnect after ${delayMs}ms (attempt $reconnectAttempts)")
                 connect(null)
             }
         }

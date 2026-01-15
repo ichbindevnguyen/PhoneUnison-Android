@@ -6,8 +6,9 @@ import android.provider.OpenableColumns
 import android.util.Log
 import com.phoneunison.mobile.protocol.Message
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
@@ -20,6 +21,8 @@ class FileHandler(private val context: Context, private val connectionService: C
     companion object {
         private const val TAG = "FileHandler"
     }
+
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     private val client =
             OkHttpClient.Builder()
@@ -51,7 +54,7 @@ class FileHandler(private val context: Context, private val connectionService: C
         val host = connectionService.serverHost ?: return
         val port = connectionService.serverPort
 
-        GlobalScope.launch(Dispatchers.IO) {
+        scope.launch {
             try {
                 Log.i(TAG, "Starting upload: $fileName to $host:$port")
 
