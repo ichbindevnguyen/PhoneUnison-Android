@@ -139,14 +139,10 @@ class MessageHandler(private val connectionService: ConnectionService) {
         val fileName = message.data?.get("fileName") as? String
         val fileSize = message.data?.get("fileSize") as? Long
 
-        Log.d(TAG, "File offer: $fileName ($fileSize bytes)")
-
-        val response =
-                Message(
-                        Message.FILE_ACCEPT,
-                        mapOf("transferId" to message.data?.get("transferId"), "accepted" to true)
-                )
-        connectionService.sendMessage(response)
+        Log.i(
+                TAG,
+                "File offer received: $fileName ($fileSize bytes) - will be received via HTTP upload"
+        )
     }
 
     private fun handleFileAccept(message: Message) {

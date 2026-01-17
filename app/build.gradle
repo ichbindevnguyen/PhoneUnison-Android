@@ -19,8 +19,9 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled true
-            shrinkResources true
+            minifyEnabled false
+            shrinkResources false
+            signingConfig signingConfigs.debug
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
@@ -65,6 +66,9 @@ dependencies {
     
     // WebSocket (OkHttp)
     implementation 'com.squareup.okhttp3:okhttp:4.12.0'
+    
+    // HTTP Server for receiving files
+    implementation 'org.nanohttpd:nanohttpd:2.3.1'
     
     // JSON
     implementation 'com.google.code.gson:gson:2.10.1'

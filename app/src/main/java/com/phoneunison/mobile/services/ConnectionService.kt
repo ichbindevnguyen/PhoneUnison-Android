@@ -58,6 +58,8 @@ class ConnectionService : Service() {
     lateinit var callHandler: CallHandler
         private set
     private var messageHandler: com.phoneunison.mobile.protocol.MessageHandler? = null
+    private var httpFileServer: HttpFileServer? = null
+    private lateinit var connectionPrefs: com.phoneunison.mobile.data.ConnectionPreferences
 
     var serverHost: String? = null
         private set
@@ -72,10 +74,15 @@ class ConnectionService : Service() {
         instance = this
         Log.i(TAG, "Connection service created")
 
+        connectionPrefs = com.phoneunison.mobile.data.ConnectionPreferences(this)
+
         smsHandler = SmsHandler(this)
         fileHandler = FileHandler(this, this)
         callHandler = CallHandler(this, this)
         messageHandler = MessageHandler(this)
+
+        httpFileServer = HttpFileServer(this, 8766)
+        httpFileServer?.startServer()
 
         client =
                 OkHttpClient.Builder()
@@ -133,6 +140,7 @@ class ConnectionService : Service() {
         try {
             unregisterReceiver(messageReceiver)
         } catch (e: IllegalArgumentException) {}
+        httpFileServer?.stopServer()
         disconnect()
         serviceScope.cancel()
         Log.i(TAG, "Connection service destroyed")
@@ -264,6 +272,10 @@ class ConnectionService : Service() {
         connectedDeviceName = deviceName
         reconnectAttempts = 0
         updateNotification("Connected to $deviceName")
+
+        serverHost?.let { host ->
+            connectionPrefs.saveConnection(host, serverPort, null, deviceName)
+        }
     }
 
     private fun setDisconnected() {
@@ -276,6 +288,24 @@ class ConnectionService : Service() {
         webSocket?.close(1000, "User disconnected")
         webSocket = null
         setDisconnected()
+    }
+
+    fun userDisconnect() {
+        Log.i(TAG, "User requested disconnect - clearing saved connection")
+        connectionPrefs.clearConnection()
+        disconnect()
+        stopSelf()
+    }
+
+    fun tryAutoReconnect(): Boolean {
+        if (connectionPrefs.hasSavedConnection()) {
+            serverHost = connectionPrefs.lastServerHost
+            serverPort = connectionPrefs.lastServerPort
+            Log.i(TAG, "Auto-reconnecting to saved connection: $serverHost:$serverPort")
+            connect(null)
+            return true
+        }
+        return false
     }
 
     private fun scheduleReconnect() {

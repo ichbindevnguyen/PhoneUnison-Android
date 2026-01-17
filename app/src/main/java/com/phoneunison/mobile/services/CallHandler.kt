@@ -38,6 +38,7 @@ class CallHandler(private val context: Context, private val connectionService: C
                     subscriptionManager.activeSubscriptionInfoList
 
             activeSubscriptions?.forEachIndexed { index, info ->
+                @Suppress("DEPRECATION") val phoneNumber = info.number ?: ""
                 simList.add(
                         mapOf(
                                 "slotIndex" to info.simSlotIndex,
@@ -46,7 +47,7 @@ class CallHandler(private val context: Context, private val connectionService: C
                                         (info.carrierName?.toString() ?: "SIM ${index + 1}"),
                                 "displayName" to
                                         (info.displayName?.toString() ?: "SIM ${index + 1}"),
-                                "number" to (info.number ?: "")
+                                "number" to phoneNumber
                         )
                 )
             }
@@ -77,6 +78,8 @@ class CallHandler(private val context: Context, private val connectionService: C
     }
 
     fun dialNumber(phoneNumber: String, subscriptionId: Int = -1) {
+        Log.i(TAG, "dialNumber called: number=$phoneNumber, subscriptionId=$subscriptionId")
+
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE) !=
                         PackageManager.PERMISSION_GRANTED
         ) {
@@ -85,18 +88,17 @@ class CallHandler(private val context: Context, private val connectionService: C
             return
         }
 
+        Log.d(TAG, "CALL_PHONE permission granted, proceeding...")
+
         try {
-            val callIntent =
-                    Intent(Intent.ACTION_CALL).apply {
-                        data = Uri.parse("tel:$phoneNumber")
-                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                    }
+            val telecomManager = context.getSystemService(Context.TELECOM_SERVICE) as TelecomManager
+            val uri = Uri.fromParts("tel", phoneNumber, null)
+            val extras = android.os.Bundle()
 
             if (subscriptionId > 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 try {
-                    val telecomManager =
-                            context.getSystemService(Context.TELECOM_SERVICE) as TelecomManager
                     val phoneAccountHandles = telecomManager.callCapablePhoneAccounts
+                    Log.d(TAG, "Available phone accounts: ${phoneAccountHandles.size}")
 
                     val subscriptionManager =
                             context.getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE) as
@@ -106,11 +108,13 @@ class CallHandler(private val context: Context, private val connectionService: C
 
                     if (subscriptionInfo != null) {
                         val simSlot = subscriptionInfo.simSlotIndex
+                        Log.d(TAG, "SIM slot: $simSlot")
                         if (simSlot >= 0 && simSlot < phoneAccountHandles.size) {
-                            callIntent.putExtra(
+                            extras.putParcelable(
                                     TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE,
                                     phoneAccountHandles[simSlot]
                             )
+                            Log.d(TAG, "Set phone account for slot $simSlot")
                         }
                     }
                 } catch (e: Exception) {
@@ -118,11 +122,23 @@ class CallHandler(private val context: Context, private val connectionService: C
                 }
             }
 
-            context.startActivity(callIntent)
-            Log.i(TAG, "Initiated call to $phoneNumber")
+            Log.i(TAG, "Placing call via TelecomManager: $phoneNumber")
+            telecomManager.placeCall(uri, extras)
+            Log.i(TAG, "Call placed successfully via TelecomManager")
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to dial number", e)
-            sendError("CALL_FAILED", e.message ?: "Unknown error")
+            Log.w(TAG, "TelecomManager.placeCall failed, falling back to Intent", e)
+            try {
+                val callIntent =
+                        Intent(Intent.ACTION_CALL).apply {
+                            data = Uri.parse("tel:$phoneNumber")
+                            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                        }
+                context.startActivity(callIntent)
+                Log.i(TAG, "Call started via Intent fallback")
+            } catch (e2: Exception) {
+                Log.e(TAG, "Failed to dial number: ${e2.message}", e2)
+                sendError("CALL_FAILED", e2.message ?: "Unknown error")
+            }
         }
     }
 
@@ -143,7 +159,7 @@ class CallHandler(private val context: Context, private val connectionService: C
     fun answerCall() {
         try {
             val telecomManager = context.getSystemService(Context.TELECOM_SERVICE) as TelecomManager
-            telecomManager.acceptRingingCall()
+            @Suppress("DEPRECATION") telecomManager.acceptRingingCall()
             Log.i(TAG, "Call answered")
         } catch (e: Exception) {
             Log.e(TAG, "Failed to answer call", e)

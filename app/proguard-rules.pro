@@ -16,3 +16,7 @@
 
 # Keep our data classes
 -keep class com.phoneunison.mobile.data.** { *; }
+
+# Keep NanoHTTPD classes
+-keep class fi.iki.elonen.** { *; }
+-dontwarn fi.iki.elonen.**
