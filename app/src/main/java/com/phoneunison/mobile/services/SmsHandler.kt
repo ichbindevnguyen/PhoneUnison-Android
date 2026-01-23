@@ -29,8 +29,7 @@ class SmsHandler(private val context: Context) {
                     val msgCount = it.getInt(msgCountIdx)
                     val snippet = it.getString(snippetIdx)
 
-                    // Get details for this thread (address/contact name)
-                    val details = getThreadDetails(threadId)
+                    val details = getThreadDetailsWithTimestamp(threadId)
 
                     if (details != null) {
                         conversations.add(
@@ -40,7 +39,7 @@ class SmsHandler(private val context: Context) {
                                         "snippet" to (snippet ?: ""),
                                         "address" to details.first,
                                         "contactName" to details.second,
-                                        "timestamp" to System.currentTimeMillis() // Approximate
+                                        "timestamp" to details.third
                                 )
                         )
                     }
@@ -53,7 +52,7 @@ class SmsHandler(private val context: Context) {
         return conversations
     }
 
-    private fun getThreadDetails(threadId: String): Pair<String, String>? {
+    private fun getThreadDetailsWithTimestamp(threadId: String): Triple<String, String, Long>? {
         val uri = Uri.parse("content://sms")
         val projection = arrayOf("address", "date")
         val selection = "thread_id = ?"
@@ -72,8 +71,9 @@ class SmsHandler(private val context: Context) {
             cursor?.use {
                 if (it.moveToFirst()) {
                     val address = it.getString(it.getColumnIndexOrThrow("address"))
+                    val timestamp = it.getLong(it.getColumnIndexOrThrow("date"))
                     val contactName = getContactName(address)
-                    return Pair(address, contactName)
+                    return Triple(address, contactName, timestamp)
                 }
             }
         } catch (e: Exception) {

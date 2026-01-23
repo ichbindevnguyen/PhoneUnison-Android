@@ -59,16 +59,15 @@ class FileHandler(private val context: Context, private val connectionService: C
                 Log.i(TAG, "Starting upload: $fileName to $host:$port")
 
                 val inputStream = context.contentResolver.openInputStream(uri) ?: return@launch
+                val cachedMetadata = getFileMetadata(uri)
+                val fileSize = cachedMetadata?.second ?: -1L
 
-                // Create RequestBody from InputStream
                 val requestBody =
                         object : RequestBody() {
                             override fun contentType() =
                                     "application/octet-stream".toMediaTypeOrNull()
 
-                            override fun contentLength(): Long {
-                                return getFileMetadata(uri)?.second ?: -1
-                            }
+                            override fun contentLength(): Long = fileSize
 
                             override fun writeTo(sink: okio.BufferedSink) {
                                 inputStream.use { stream -> sink.writeAll(stream.source()) }
@@ -82,7 +81,6 @@ class FileHandler(private val context: Context, private val connectionService: C
                 client.newCall(request).execute().use { response ->
                     if (response.isSuccessful) {
                         Log.i(TAG, "Upload successful: $fileName")
-                        // Send FILE_COMPLETE message if needed, or rely on PC to know
                     } else {
                         Log.e(TAG, "Upload failed: ${response.code}")
                     }

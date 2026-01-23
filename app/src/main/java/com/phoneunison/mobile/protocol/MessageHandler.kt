@@ -1,7 +1,6 @@
 package com.phoneunison.mobile.protocol
 
 import android.content.Context
-import android.telephony.SmsManager
 import android.util.Log
 import com.phoneunison.mobile.services.ConnectionService
 
@@ -63,8 +62,11 @@ class MessageHandler(private val connectionService: ConnectionService) {
             Log.d(TAG, "Sending SMS to $address")
 
             val smsManager =
-                    connectionService.getSystemService(Context.TELEPHONY_SERVICE) as? SmsManager
-                            ?: SmsManager.getDefault()
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+                        connectionService.getSystemService(android.telephony.SmsManager::class.java)
+                    } else {
+                        @Suppress("DEPRECATION") android.telephony.SmsManager.getDefault()
+                    }
 
             val parts = smsManager.divideMessage(body)
             if (parts.size > 1) {
